@@ -81,7 +81,6 @@ def computer_move(board, symbol, player_symbol):
     if not empty:
         return None
 
-    # Try to win
     for i in empty:
         board[i] = symbol
         if check_win(board, symbol):
@@ -89,7 +88,6 @@ def computer_move(board, symbol, player_symbol):
             return i
         board[i] = "_"
 
-    # Block opponent
     for i in empty:
         board[i] = player_symbol
         if check_win(board, player_symbol):
@@ -97,16 +95,13 @@ def computer_move(board, symbol, player_symbol):
             return i
         board[i] = "_"
 
-    # Take corners
     for i in [0, 2, 6, 8]:
         if board[i] == "_":
             return i
 
-    # Take center
     if board[4] == "_":
         return 4
 
-    # Take sides
     for i in [1, 3, 5, 7]:
         if board[i] == "_":
             return i
@@ -140,7 +135,6 @@ class Trainer:
         history = []
 
         while True:
-            # --- AI's Turn ---
             state = player.get_state(self.board)
             action = player.choose_action(self.board, explore=True)
             if action is None:
@@ -154,7 +148,6 @@ class Trainer:
             time.sleep(1.0 / self.gui.speed_var.get())
 
             if check_win(self.board, player.symbol):
-                # AI wins
                 for s, a in reversed(history):
                     player.update_q(s, a, 1, player.get_state(self.board), [])
                 self.stats["wins"] += 1
@@ -167,8 +160,7 @@ class Trainer:
                 self.stats["draws"] += 1
                 self.stats["games"] += 1
                 break
-
-            # --- Computer's Turn ---
+                
             comp_action = computer_move(self.board, "O", player.symbol)
             if comp_action is None:
                 break
@@ -179,7 +171,6 @@ class Trainer:
             time.sleep(1.0 / self.gui.speed_var.get())
 
             if check_win(self.board, "O"):
-                # AI loses
                 last_state, last_action = history[-1]
                 player.update_q(last_state, last_action, -1, player.get_state(self.board), [])
                 self.stats["games"] += 1
@@ -271,3 +262,4 @@ class TicTacToeGUI:
 if __name__ == "__main__":
     app = TicTacToeGUI()
     app.run()
+
